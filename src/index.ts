@@ -9,6 +9,7 @@ dotenv.config();
 const app: Application = express();
 const port = process.env.PORT || 8000;
 app.use(cors());
+app.use(express.json());
 
 const uri =
   "mongodb+srv://arimAbdul:3AxkwAuenHSu1KoV@cluster0.g7lvcea.mongodb.net/?retryWrites=true&w=majority";
@@ -29,8 +30,24 @@ async function run() {
     const serviceCollection = client.db("Event360").collection("services");
     app.get("/services", async (req: Request, res: Response) => {
       const result = await serviceCollection.find().toArray();
-      console.log(result);
+      // console.log(result);
       res.json(result);
+    });
+
+    // POST endpoint to insert data
+    app.post("/add-services", async (req: Request, res: Response) => {
+      const { serviceHead, serviceDescription } = req.body; // Assuming incoming data has name and description fields
+      try {
+        const result = await serviceCollection.insertOne({
+          serviceHead,
+          serviceDescription,
+        });
+        console.log(result); // Log the result to see what it contains
+        res.status(201).json(result.ops[0]);
+      } catch (error) {
+        console.error("Error inserting data:", error);
+        res.status(500).json({ message: "Internal server error" });
+      }
     });
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
