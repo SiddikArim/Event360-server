@@ -36,13 +36,14 @@ async function run() {
 
     // POST endpoint to insert data
     app.post("/add-services", async (req: Request, res: Response) => {
-      const { serviceHead, serviceDescription } = req.body; // Assuming incoming data has name and description fields
+      const { serviceHead, serviceDescription, servicePrice } = req.body;
       try {
         const result = await serviceCollection.insertOne({
           serviceHead,
           serviceDescription,
+          servicePrice,
         });
-        console.log(result); // Log the result to see what it contains
+        console.log(result); // Log the result
         res.status(201).json(result.ops[0]);
       } catch (error) {
         console.error("Error inserting data:", error);
